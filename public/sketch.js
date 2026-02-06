@@ -89,10 +89,10 @@ function draw() {
 }
 
 function drawUI() {
-    fill(255);
+    fill(150,255,100);
     noStroke();
-    textFont('HLuckiest Guy'); // Use a clean font
-    textSize(14);
+    textFont('Luckiest Guy'); // Use a clean font
+    textSize(20);
     textAlign(LEFT, TOP);
     
     // Artistic Prompts

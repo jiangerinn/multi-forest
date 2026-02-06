@@ -6,52 +6,64 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// 1. 设置静态文件目录，让服务器能找到 public 文件夹里的 index.html 和 sketch.js
+// 设置静态文件目录
 app.use(express.static('public'));
 
-// 2. 存储“森林”数据：记录哪个格子种了哪棵树
-// 数据格式示例: { "0_1": { owner: "socket_id", colorSeed: 45.2 } }
+// 存储“森林”数据
 let forest = {}; 
 
 io.on('connection', (socket) => {
-    console.log('A user joined the network. ID:', socket.id);
+    console.log('User joined:', socket.id);
 
-    // 3. 当新玩家连接时，立刻把当前已有的森林发送给他们
+    // 1. 同步现有森林给新玩家
     socket.emit('init-forest', forest);
 
-    // 4. 监听来自玩家的“种树”请求
+    // 2. 监听种树事件
     socket.on('plant-tree', (data) => {
-        // 安全检查：确保收到了 gridId，且该位置还没被占用
+        // 只有空格子才能种树
         if (data && data.gridId && !forest[data.gridId]) {
             
-            // 将树的信息存入服务器内存
+            // 将树的信息存入服务器
             forest[data.gridId] = { 
                 owner: socket.id, 
                 colorSeed: data.colorSeed 
             }; 
             
-            // 5. 广播（Broadcast）：告诉所有在线的人，有个格子长出了新树
+            // 广播新树生成
             io.emit('new-tree', { 
                 gridId: data.gridId, 
                 tree: forest[data.gridId] 
             });
-            
-            console.log(`Action: Tree planted at [${data.gridId}] by user [${socket.id}]`);
+
+            console.log(`Tree planted at ${data.gridId}.`);
+
+            // --- 核心功能：自动枯萎逻辑 ---
+            // 设置 10 分钟（600,000 毫秒）后触发
+            setTimeout(() => {
+                if (forest[data.gridId]) {
+                    // 从服务器内存中删除该树
+                    delete forest[data.gridId]; 
+                    
+                    // 广播“枯萎”事件给所有在线玩家
+                    io.emit('wither-tree', { gridId: data.gridId });
+                    
+                    console.log(`Tree at ${data.gridId} has withered naturally.`);
+                }
+            }, 600000); // 如果测试时想看效果，可以把这个数字改成 10000 (10秒)
+            // ----------------------------
         }
     });
 
-    // 6. 监听断开连接（可选，用于后台观察）
     socket.on('disconnect', () => {
-        console.log('A user left the network.');
+        console.log('User left.');
     });
 });
 
-// 7. 端口设置：优先使用环境端口（Render云端需要），本地默认 3000
+// 端口自适应配置（本地 3000，云端由环境决定）
 const PORT = process.env.PORT || 3000;
-
 server.listen(PORT, '0.0.0.0', () => {
     console.log('------------------------------------');
-    console.log(`SERVER STATUS: ONLINE`);
-    console.log(`Local Access: http://localhost:${PORT}`);
+    console.log(`SERVER STATUS: ONLINE (Auto-Wither: 10m)`);
+    console.log(`URL: http://localhost:${PORT}`);
     console.log('------------------------------------');
 });

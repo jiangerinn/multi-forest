@@ -91,12 +91,12 @@ function draw() {
 function drawUI() {
     fill(255);
     noStroke();
-    textFont('Helvetica'); // Use a clean font
+    textFont('HLuckiest Guy'); // Use a clean font
     textSize(14);
     textAlign(LEFT, TOP);
     
     // Artistic Prompts
-    text("PLEASE HOLD DOWN", 20, 20);
+    text("PLEASE HOLD DOWN TO PLANT TOGETHER", 20, 20);
     text("NETWORK NODES: " + Object.keys(forest).length, 20, 40);
     
     fill(120);

@@ -97,7 +97,6 @@ function drawUI() {
     
     fill(120);
     textSize(12);
-    text("INSTRUCTION: HOLD DOWN FOR 10 SECONDS TO OCCUPY A CELL", 20, height - 30);
 }
 
 function drawTree(x, y, seed) {

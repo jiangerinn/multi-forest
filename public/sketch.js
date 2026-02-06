@@ -28,7 +28,7 @@ socket.on('wither-tree', (res) => {
 }
 
 function draw() {
-    background(245); // Clean gallery-style background
+    background(0); 
     
     drawUI();
 
@@ -89,14 +89,14 @@ function draw() {
 }
 
 function drawUI() {
-    fill(80);
+    fill(255);
     noStroke();
     textFont('Helvetica'); // Use a clean font
     textSize(14);
     textAlign(LEFT, TOP);
     
     // Artistic Prompts
-    text("SYSTEM STATUS: ONLINE", 20, 20);
+    text("PLEASE HOLD DOWN", 20, 20);
     text("NETWORK NODES: " + Object.keys(forest).length, 20, 40);
     
     fill(120);

@@ -9,6 +9,10 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     socket = io();
     
+socket.on('wither-tree', (res) => {
+    // 当服务器说某棵树枯萎了，本地也把它删掉
+    delete forest[res.gridId];
+});
     // Assign a unique color seed for this session
     myColorSeed = random(0, 100);
 
